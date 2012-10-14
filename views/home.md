@@ -1,6 +1,6 @@
-# Views & Responses
+# Views & Respostas
 
-## Contents
+## Conteúdo
 
 - [O Basico](#the-basics)
 - [Anexando Dados As Views](#binding-data-to-views)
@@ -108,6 +108,8 @@ Tipicamente, uma rota ou controller vai requisitar dados de um model que a view 
 ## Aninhando Views
 
 Comumente será preciso aninhar views dentro de outras views. As vezes views aninhadas são chamadas de "partials", e ajudam você a manter views pequenas e modulares.
+
+> Nota de tradução: A tradução literal de "Partial" seria "Parcial". Porém por se tratar de uma expressão do desenvolvimento de interfaces web, vamos utiliza-lo sem tradução.
 
 #### Anexando uma view aninhada usando o método "nest":
 
@@ -224,6 +226,8 @@ As vezes você pode precisar redirecionar para uma rota nomeada, mas também pre
 ## Redirecionando com Flash Data
 
 Depois que um usuário cria uma conta na sua aplicação, é comum mostrar um "bem vindo" ou mensagem informativa, por exemplo: "cadastro efetuado com sucesso". Como você pode definir uma mensagem informativa para estar disponível na proxima request? Use o método with() para enviar uma flash data junto com o seu redirecionamento.
+
+> Nota de tradução: Flash data não possuí uma tradução exata. É uma forma de enviar dados de uma requisição a outra utilizando a sessão do usuário. Não faria muito sentido chamarmos de "dados flash".
 
 	return Redirect::to('profile')->with('status', 'Welcome Back!');
 
