@@ -2,50 +2,50 @@
 
 ## Contents
 
-- [The Basics](#the-basics)
-- [Binding Data To Views](#binding-data-to-views)
-- [Nesting Views](#nesting-views)
-- [Named Views](#named-views)
-- [View Composers](#view-composers)
-- [Redirects](#redirects)
-- [Redirecting With Flash Data](#redirecting-with-flash-data)
+- [O Basico](#the-basics)
+- [Anexando Dados As Views](#binding-data-to-views)
+- [Aninhando Views](#nesting-views)
+- [Views Nomeadas](#named-views)
+- [Composers de Views](#view-composers)
+- [Redirecionamento](#redirects)
+- [Redirecionando com Flash Data](#redirecting-with-flash-data)
 - [Downloads](#downloads)
-- [Errors](#errors)
+- [Erros](#errors)
 
 <a name="the-basics"></a>
-## The Basics
+## O Basico
 
-Views contain the HTML that is sent to the person using your application. By separating your view from the business logic of your application, your code will be cleaner and easier to maintain.
+Views contém o HTML que sera enviado para a pessoa usando a sua aplicação. Por separar sua view da logica de negocio da sua aplicação, seu código ficará mais limpo e fácil de manter.
 
-All views are stored within the **application/views** directory and use the PHP file extension. The **View** class provides a simple way to retrieve your views and return them to the client. Let's look at an example!
+Todas as views ficam no diretório **application/views** e tem PHP como extensão do arquivo. A classe **View** fornece uma forma simples de obter suas views e de envia-las ao usuário. Vamos ver um exemplo!
 
-#### Creating the view:
+#### Criando a view:
 
 	<html>
-		I'm stored in views/home/index.php!
+		Estou salva em views/home/index.php!
 	</html>
 
-#### Returning the view from a route:
+#### Retornando a view através de uma rota:
 
 	Route::get('/', function()
 	{
 		return View::make('home.index');
 	});
 
-#### Returning the view from a controller:
+#### Retornando a view através de um controller
 
 	public function action_index()
 	{
 		return View::make('home.index');
 	});
 
-#### Determining if a view exists:
+#### Determinando se uma view existe:
 
 	$exists = View::exists('home.index');
 
-Sometimes you will need a little more control over the response sent to the browser. For example, you may need to set a custom header on the response, or change the HTTP status code. Here's how:
+As vezes você pode precisar de um pouco mais de controle sob as respostas enviadas ao navegador. Por exemplo, você pode precisar definir um header customizado para a resposta, ou mudar o código de estado HTTP. Para tal:
 
-#### Returning a custom response:
+#### Retornando uma resposta customizada:
 
 	Route::get('/', function()
 	{
@@ -54,110 +54,110 @@ Sometimes you will need a little more control over the response sent to the brow
 		return Response::make('Hello World!', 200, $headers);
 	});
 
-#### Returning a custom response containing a view, with binding data:
+#### Retornando uma resposta customizada, contendo uma view e dados anexados:
 
 	return Response::view('home', array('foo' => 'bar'));
 
-#### Returning a JSON response:
+#### Retornando uma resposta em JSON:
 
 	return Response::json(array('name' => 'Batman'));
 
-#### Returning Eloquent models as JSON:
+#### Retornando models do Eloquent como JSON:
 
 	return Response::eloquent(User::find(1));
 
 <a name="binding-data-to-views"></a>
-## Binding Data To Views
+## Anexando Dados As Views
 
-Typically, a route or controller will request data from a model that the view needs to display. So, we need a way to pass the data to the view. There are several ways to accomplish this, so just pick the way that you like best!
+Tipicamente, uma rota ou controller vai requisitar dados de um model que a view precisa mostrar. Então nos precisamos de uma forma de enviar os dados para a view. Aqui estão algumas formas de fazer isso, escolha a forma que você preferir!
 
-#### Binding data to a view:
+#### Anexando dados a view:
 
 	Route::get('/', function()
 	{
 		return View::make('home')->with('name', 'James');
 	});
 
-#### Accessing the bound data within a view:
+#### Acessando os dados anexados na view:
 
 	<html>
 		Hello, <?php echo $name; ?>.
 	</html>
 
-#### Chaining the binding of data to a view:
+#### Anexando dados a view utilizando encadeamento:
 
 	View::make('home')
 		->with('name', 'James')
 		->with('votes', 25);
 
-#### Passing an array of data to bind data:
+#### Passando uma array de dados para ser anexada:
 
 	View::make('home', array('name' => 'James'));
 
-#### Using magic methods to bind data:
+#### Utilizando metódos magicos para anexar dados:
 
 	$view->name  = 'James';
 	$view->email = 'example@example.com';
 
-#### Using the ArrayAccess interface methods to bind data:
+#### Usando o acesso em forma de array para anexar dados:
 
 	$view['name']  = 'James';
 	$view['email'] = 'example@example.com';
 
 <a name="nesting-views"></a>
-## Nesting Views
+## Aninhando Views
 
-Often you will want to nest views within views. Nested views are sometimes called "partials", and help you keep views small and modular.
+Comumente será preciso aninhar views dentro de outras views. As vezes views aninhadas são chamadas de "partials", e ajudam você a manter views pequenas e modulares.
 
-#### Binding a nested view using the "nest" method:
+#### Anexando uma view aninhada usando o método "nest":
 
 	View::make('home')->nest('footer', 'partials.footer');
 
-#### Passing data to a nested view:
+#### Passando dados para uma view aninhada:
 
 	$view = View::make('home');
 
 	$view->nest('content', 'orders', array('orders' => $orders));
 
-Sometimes you may wish to directly include a view from within another view. You can use the **render** helper function:
+As vezes você pode querer incluir uma view diretamente em outra view. Você pode usar a função helper **render**:
 
-#### Using the "render" helper to display a view:
+#### Usando o helper "render" para exibir uma view:
 
 	<div class="content">
 		<?php echo render('user.profile'); ?>
 	</div>
 
-It is also very common to have a partial view that is responsible for display an instance of data in a list. For example, you may create a partial view responsible for displaying the details about a single order. Then, for example, you may loop through an array of orders, rendering the partial view for each order. This is made simpler using the **render_each** helper:
+É muito comum ter uma view partial que é responsável por mostrar uma instancia de dados em uma lista. Por exemplo, você pode criar uma view partial responsável por mostrar os detalhes sobre um unico pedido. Depois, por exemplo, você pode rodar um loop por uma array de pedidos, renderizando a view parcial para cada um dos pedidos. Isso pode ser feito de forma simples usando o método helper **render_each**:
 
-#### Rendering a partial view for each item in an array:
+#### Renderizando uma view partial para cada item na array:
 
 	<div class="orders">
 		<?php echo render_each('partials.order', $orders, 'order');
 	</div>
 
-The first argument is the name of the partial view, the second is the array of data, and the third is the variable name that should be used when each array item is passed to the partial view.
+O primeiro argumento é o nome da view partial, o segundo é a array de dados e o terceiro é o nome da variável cada item da array quando este for passado para a view partial.
 
 <a name="named-views"></a>
-## Named Views
+## Views Nomeadas
 
-Named views can help to make your code more expressive and organized. Using them is simple:
+Views nomeadas podem ajudar a fazer seu código mais expressívo e organizado. Usa-las é simples:
 
-#### Registering a named view:
+#### Registrando uma view nomeada:
 
 	View::name('layouts.default', 'layout');
 
-#### Getting an instance of the named view:
+#### Obtendo uma instancia de uma view nomeada:
 
 	return View::of('layout');
 
-#### Binding data to a named view:
+#### Anexando dados a uma view nomeada:
 
 	return View::of('layout', array('orders' => $orders));
 
 <a name="view-composers"></a>
-## View Composers
+## Composers de Views
 
-Each time a view is created, its "composer" event will be fired. You can listen for this event and use it to bind assets and common data to the view each time it is created. A common use-case for this functionality is a side-navigation partial that shows a list of random blog posts. You can nest your partial view by loading it in your layout view. Then, define a composer for that partial. The composer can then query the posts table and gather all of the necessary data to render your view. No more random logic strewn about! Composers are typically defined in **application/routes.php**. Here's an example:
+Sempre que uma view é criada, seu evento "composer" será disparado. Você pode esperar por esse evento e usa-lo para anexar assets e dados comuns para a view cada vez que essa for criada. Um caso de uso comum para essa funcionalidade é seria uma partial de *barra de navegação lateral* que mostra uma lista de posts de seu blog aleatoriamente. Você pode aninhar sua view partial na sua view layout, depois definir um composer para aquela partial. O composer pode então fazer uma query para obter os posts da tabela e todas as informações necessárias para a exibição na sua view. Sem código espaguete! Composers são tipicamente definidos em **application/routes.php**. Aqui está um exemplo:
 
 #### Register a view composer for the "home" view:
 
@@ -166,95 +166,95 @@ Each time a view is created, its "composer" event will be fired. You can listen 
 		$view->nest('footer', 'partials.footer');
 	});
 
-Now each time the "home" view is created, an instance of the View will be passed to the registered Closure, allowing you to prepare the view however you wish.
+Agora toda vez que a view "home" for criada, uma instancia da View será passada para a Closure registrada, permitindo você preparar a view da forma como você desejar.
 
-#### Register a composer that handles multiple views:
+#### Registrar um composer que trata multipla views:
 
 	View::composer(array('home', 'profile'), function($view)
 	{
 		//
 	});
 
-> **Note:** A view can have more than one composer. Go wild!
+> **Nota:** Uma view pode ter mais de um composer. Divirta-se!
 
 <a name="redirects"></a>
-## Redirects
+## Redirecionamento
 
-It's important to note that both routes and controllers require responses to be returned with the 'return' directive. Instead of calling "Redirect::to()"" where you'd like to redirect the user. You'd instead use "return Redirect::to()". This distinction is important as it's different than most other PHP frameworks and it could be easy to accidentally overlook the importance of this practice.
+É importante notar que ambos, rotas e controllers, precisam que as respostas sejam retornadas com a diretriva "return". Ao invés de chamar "Redirect::to()" quando você quiser redirecionar o usuário, você deve usar "return Redirect::to()". Essa distinção é importante, já que é diferente da maioria dos outros frameworks PHP, o que pode causar uma confusão facilmente caso o desenvolvedor não preste atenção.
 
-#### Redirecting to another URI:
+#### Redirecionando para outra URI:
 
 	return Redirect::to('user/profile');
 
-#### Redirecting with a specific status:
+#### Redirecionando com um estado específico:
 
 	return Redirect::to('user/profile', 301);
 
-#### Redirecting to a secure URI:
+#### Redirecionando para uma URI segura:
 
 	return Redirect::to_secure('user/profile');
 
-#### Redirecting to the root of your application:
+#### Redirecionando para a raiz de sua aplicação:
 
 	return Redirect::home();
 
-#### Redirecting back to the previous action:
+#### Redirecionando de volta para a ação anterior:
 
 	return Redirect::back();
 
-#### Redirecting to a named route:
+#### Redirecionando para uma rota nomeada:
 
 	return Redirect::to_route('profile');
 
-#### Redirecting to a controller action:
+#### Redirecionando para uma ação de um controller:
 
 	return Redirect::to_action('home@index');
 
-Sometimes you may need to redirect to a named route, but also need to specify the values that should be used instead of the route's URI wildcards. It's easy to replace the wildcards with proper values:
+As vezes você pode precisar redirecionar para uma rota nomeada, mas também precisa especificar valores que serão usados como parametros (wildcards). É fácil substituir os parametros com os valores devidos:
 
-#### Redirecting to a named route with wildcard values:
+#### Redirecionando para uma rota nomeada com parametros (wildcard):
 
 	return Redirect::to_route('profile', array($username));
 
-#### Redirecting to an action with wildcard values:
+#### Redirecionando para uma ação com parametros:
 
 	return Redirect::to_action('user@profile', array($username));
 
 <a name="redirecting-with-flash-data"></a>
-## Redirecting With Flash Data
+## Redirecionando com Flash Data
 
-After a user creates an account or signs into your application, it is common to display a welcome or status message. But, how can you set the status message so it is available for the next request? Use the with() method to send flash data along with the redirect response.
+Depois que um usuário cria uma conta na sua aplicação, é comum mostrar um "bem vindo" ou mensagem informativa, por exemplo: "cadastro efetuado com sucesso". Como você pode definir uma mensagem informativa para estar disponível na proxima request? Use o método with() para enviar uma flash data junto com o seu redirecionamento.
 
 	return Redirect::to('profile')->with('status', 'Welcome Back!');
 
-You can access your message from the view with the Session get method:
+Você pode acessar sua mensagem na view com o método Session get:
 
 	$status = Session::get('status');
 
-*Further Reading:*
+*Leitura complementar:*
 
-- *[Sessions](/docs/session/config)*
+- *[Sessões](/docs/session/config)*
 
 <a name="downloads"></a>
 ## Downloads
 
-#### Sending a file download response:
+#### Enviando o download de um arquivo como resposta:
 
 	return Response::download('file/path.jpg');
 
-#### Sending a file download and assigning a file name:
+#### Enviando um arquivo como download e definindo um nome para tal:
 
 	return Response::download('file/path.jpg', 'photo.jpg');
 
 <a name="errors"></a>
-## Errors
+## Erros
 
-To generating proper error responses simply specify the response code that you wish to return. The corresponding view stored in **views/error** will automatically be returned.
+Para gerar as devidas repostas de erro, simplismente especifique o código de resposta que você deseja retornar. As views correspondentes em **views/error** serão automáticamente retornadas.
 
-#### Generating a 404 error response:
+#### Gerando uma resposta de erro 404:
 
 	return Response::error('404');
 
-#### Generating a 500 error response:
+#### Gerando uma resposta de erro 500:
 
 	return Response::error('500');
